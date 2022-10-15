@@ -1,0 +1,26 @@
+#To start docker - uses image-id:
+sudo nvidia-docker run --ipc=host -i -t 865978e72e14
+nvidia-docker run --ipc=host -i -t 865978e72e14
+nvidia-docker run --ipc=host -i -t -p 8888:8888 865978e72e14
+
+#To copy to docker - uses running container id:
+docker cp ../Research/GLIP/ 4ca6d38c3303:/workspace/Research/
+
+#List running docker containers:
+docker ps -a
+
+#List docker images:
+docker images
+
+#Run command of GLIP on COCO val set:
+python tools/test_grounding_net.py --config-file ./configs/pretrain/glip_Swin_L.yaml --weight MODEL/glip_large_model.pth TEST.IMS_PRE_BATCH 1 MODEL.DYHEAD.SCORE_AGG "MEAN" TEST.EVAL_TASK detection MODELDYHEAD.FUSE_CONFIG.MLM_LOSS False OUTPUT_DIR ./Results/
+
+#To save the container changes as an image - uses running container id:
+docker commit -m "Installed all depencies of Glip and have a working instance on Coco dataset" -a grg 5cf130a52a81 glip
+
+##To connect to jupyter notebook remotely: 
+#Ref:https://stackoverflow.com/questions/38830610/access-jupyter-notebook-running-on-docker-container
+#Start docker with a port connection
+docker run -it -p 8888:8888 image:version
+#Inside the container launch the notebook assigning the port you opened:
+jupyter notebook --ip 0.0.0.0 --port 8888 --no-browser --allow-root
